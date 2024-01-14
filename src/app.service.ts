@@ -28,6 +28,25 @@ export class AppService {
       fs.mkdirSync(directoryPath);
     }
 
-    return fs.readdirSync(directoryPath);
+    const files = fs.readdirSync(directoryPath);
+
+    return readChildren(files);
   }
 }
+
+const readChildren = (filenames: string[]) => {
+  const read = filenames.map((fileName) => {
+    const filePath = path.join("uploads", fileName);
+    const fileStats = fs.statSync(filePath);
+    const directoryChildren = fileStats.isDirectory()
+      ? fs.readdirSync(filePath)
+      : [];
+
+    return {
+      name: fileName,
+      children: directoryChildren,
+    };
+  });
+
+  return read;
+};
