@@ -28,25 +28,20 @@ export class AppService {
       fs.mkdirSync(directoryPath);
     }
 
-    const files = fs.readdirSync(directoryPath);
-
-    return readChildren(files);
+    return readChildren(directoryPath);
   }
 }
 
-const readChildren = (filenames: string[]) => {
-  const read = filenames.map((fileName) => {
-    const filePath = path.join("uploads", fileName);
-    const fileStats = fs.statSync(filePath);
-    const directoryChildren = fileStats.isDirectory()
-      ? fs.readdirSync(filePath)
-      : [];
+const readChildren = (dirPath: string) => {
+  const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+
+  return entries.map((entry) => {
+    const filePath = path.join(dirPath, entry.name);
+    const isDirectory = fs.statSync(filePath).isDirectory();
 
     return {
-      name: fileName,
-      children: directoryChildren,
+      name: entry.name,
+      children: isDirectory ? readChildren(filePath) : [],
     };
   });
-
-  return read;
 };
