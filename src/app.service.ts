@@ -4,21 +4,23 @@ import * as fs from "fs";
 
 @Injectable()
 export class AppService {
-  async uploadFile(file: Express.Multer.File) {
+  async uploadFiles(files: Express.Multer.File[]) {
     const uploadDirectory = "uploads";
 
     if (!fs.existsSync(uploadDirectory)) {
       fs.mkdirSync(uploadDirectory);
     }
 
-    const fileName = file.originalname;
-    const filePath = path.join(uploadDirectory, fileName);
+    files.forEach((file) => {
+      const fileName = file.originalname;
+      const filePath = path.join(uploadDirectory, fileName);
 
-    if (fs.existsSync(path.join(uploadDirectory, fileName))) {
-      throw new ConflictException("File already exists");
-    }
+      if (fs.existsSync(path.join(uploadDirectory, fileName))) {
+        throw new ConflictException("File already exists");
+      }
 
-    fs.writeFileSync(filePath, file.buffer);
+      fs.writeFileSync(filePath, file.buffer);
+    });
   }
 
   async getFiles() {

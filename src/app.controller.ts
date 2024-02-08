@@ -4,11 +4,11 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from "@nestjs/common";
 import { AppService } from "./app.service";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FilesInterceptor } from "@nestjs/platform-express";
 
 @Controller("api/files")
 export class AppController {
@@ -16,9 +16,9 @@ export class AppController {
 
   @Post("upload")
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(FileInterceptor("file"))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return await this.appService.uploadFile(file);
+  @UseInterceptors(FilesInterceptor("files"))
+  async uploadFile(@UploadedFiles() files: Express.Multer.File[]) {
+    return await this.appService.uploadFiles(files);
   }
 
   @Get()
